@@ -122,7 +122,7 @@ contract HeadTail {
     uint256 public timeB;
 
     /** @dev Constructor, commit head or tail.
-     *  @param _commitmentA is keccak256(abi.encodePacked(chooseHead,randomNumber));
+     *  @param _commitmentA is keccak256(abi.encode(chooseHead,randomNumber));
      */
     constructor(bytes32 _commitmentA) payable {
         require(msg.value == 1 ether);
@@ -132,7 +132,7 @@ contract HeadTail {
     }
 
     /** @dev Guess the choice of party A.
-     *  @param _chooseHead True if the guess is head, false otherwize.
+     *  @param _chooseHead True if the guess is head, false otherwise.
      */
     function guess(bool _chooseHead) public payable {
         require(msg.value == 1 ether);
@@ -150,7 +150,7 @@ contract HeadTail {
     function resolve(bool _chooseHead, uint256 _randomNumber) public {
         require(msg.sender == partyA);
         require(
-            keccak256(abi.encodePacked(_chooseHead, _randomNumber)) ==
+            keccak256(abi.encode(_chooseHead, _randomNumber)) ==
                 commitmentA
         );
         require(address(this).balance >= 2 ether);
@@ -523,7 +523,7 @@ contract GuessTheAverage {
     }
 
     /** @dev Adds the guess for the user.
-     *  @param _commitment The commitment of the user under the form of keccak256(abi.encodePacked(msg.sender, _number, _blindingFactor) where the blinding factor is a bytes32.
+     *  @param _commitment The commitment of the user under the form of keccak256(abi.encode(msg.sender, _number, _blindingFactor) where the blinding factor is a bytes32.
      */
     function guess(bytes32 _commitment) public payable {
         Player storage player = players[msg.sender];
@@ -555,7 +555,7 @@ contract GuessTheAverage {
         require(player.hasGuessed, "Player must have guessed");
         // Check the hash to prove the player's honesty
         require(
-            keccak256(abi.encodePacked(msg.sender, _number, _blindingFactor)) ==
+            keccak256(abi.encode(msg.sender, _number, _blindingFactor)) ==
                 player.commitment,
             "Invalid hash"
         );
