@@ -19,7 +19,7 @@
     - `require(recipient != address(0), "ERC20: transfer to the zero address");`
   - ~~require(balances[msg.sender] != 0);~~ => `require(balances[_msgSender()] >= _amount, "Insufficient balance");`
 - +***Genral recommendations*** above (compiler version & SafeMath, events, function visibility...)
-- Context from OpenZeppelin
+- Context from OpenZeppelin <br><br>
 
 ## Exercise 2
 
@@ -27,7 +27,7 @@
   - ~~`balances[msg.sender] += msg.value / 1 ether;`~~ => `balances[_msgSender()] += (msg.value * 10**18) / 1 ether;`
 - `votingRights[_msgSender()]` **never decreased** => comments no detailed we dont know if this is made on purpose or if a variable update is missing
 - +***Genral recommendations*** above (compiler version & SafeMath, events, function visibility...)
-- Context from OpenZeppelin
+- Context from OpenZeppelin <br><br>
 
 ## Exercise 3
 - Set owner in constructor in order to use a function that will:
