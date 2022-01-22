@@ -132,7 +132,32 @@ describe("WinnerTakesAll", async () => {
     });
   });
 
-  describe.skip("clearRounds(...)", async () => {
+  describe("clearRounds(...)", async () => {
+    it("deletes all rounds data: rounds length is = 0", async () => {
+      await mockWinnerTakesAll.clearRounds();
+
+      expect(await mockWinnerTakesAll.getRoundLength()).to.be.eq(0);
+    });
+
+    it("fails on rewards amount of round as rounds' data have been deleted", async () => {
+      for (let i = 0; i < 3; i++) {
+        await expect(mockWinnerTakesAll.rounds(i)).to.be.reverted;
+      }
+    });
+
+    it("fails on fetching addresses' allocation as rounds' data have been deleted", async () => {
+      const array = await ethers.getSigners();
+
+      for (let i = 0; i < 5; i++) {
+        const user = array[i];
+        await expect(mockWinnerTakesAll.isAllowedAt(0, user.address)).to.be
+          .reverted;
+        await expect(mockWinnerTakesAll.isAllowedAt(1, user.address)).to.be
+          .reverted;
+        await expect(mockWinnerTakesAll.isAllowedAt(2, user.address)).to.be
+          .reverted;
+      }
+    });
     // verify all data from rounds have been deleted including rewards allocated to each round and addresses allowed to participate to each round
   });
 
