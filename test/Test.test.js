@@ -1,18 +1,22 @@
 const { expect } = require("chai");
 
-let owner, test;
+let owner, mockWinnerTakesAll;
 
 before(async () => {
   [owner] = await ethers.getSigners();
 
-  const Test = await ethers.getContractFactory("Test");
-  test = await Test.deploy();
+  const MockWinnerTakesAll = await ethers.getContractFactory(
+    "MockWinnerTakesAll"
+  );
+  mockWinnerTakesAll = await MockWinnerTakesAll.deploy();
 });
 
-describe("Test", async () => {
-  it("pushes some index", async () => {
-    await test.createNewRounds(3);
+describe("WinnerTakesAll", async () => {
+  it("creates new rounds and verify number of rounds > 0", async () => {
+    await mockWinnerTakesAll.createNewRounds(3);
+    const numberOfRounds = await mockWinnerTakesAll.getRoundLength();
 
-    console.log(await test.getRoundLength());
+    console.log(numberOfRounds);
+    expect(numberOfRounds).to.be.gt(0);
   });
 });
