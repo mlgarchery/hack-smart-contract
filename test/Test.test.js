@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { parseUnits, formatEther } = require("@ethersproject/units");
 
-let owner, mockWinnerTakesAll;
+let owner, alice, bob, charlie, delta, mockWinnerTakesAll;
 
 const getBNBBalance = async (user) => {
   const provider = new ethers.providers.Web3Provider(hre.network.provider);
@@ -9,7 +9,7 @@ const getBNBBalance = async (user) => {
 };
 
 before(async () => {
-  [owner] = await ethers.getSigners();
+  [owner, alice, bob, charlie, delta] = await ethers.getSigners();
 
   const MockWinnerTakesAll = await ethers.getContractFactory(
     "MockWinnerTakesAll"
@@ -58,6 +58,46 @@ describe("WinnerTakesAll", async () => {
           value: parseUnits("1", "ether"),
         })
       ).to.be.reverted;
+    });
+  });
+
+  describe("isAllowedAt(...)", async () => {
+    it("verifies no one is allowed to participate to any new rounds by default", async () => {
+      const array = await ethers.getSigners();
+
+      for (let i = 0; i < 5; i++) {
+        const user = array[i];
+        expect(await mockWinnerTakesAll.isAllowedAt(0, user.address)).to.be
+          .false;
+        expect(await mockWinnerTakesAll.isAllowedAt(1, user.address)).to.be
+          .false;
+        expect(await mockWinnerTakesAll.isAllowedAt(2, user.address)).to.be
+          .false;
+      }
+    });
+  });
+
+  describe("setRewardsAtRoundfor(...)", async () => {
+    it("verifies owner and Alice are allowed to participated in round 3", async () => {
+      await mockWinnerTakesAll.setRewardsAtRoundfor(2, [
+        owner.address,
+        alice.address,
+      ]);
+      // Verify rounds 3 participation for owner & Alice
+      expect(await mockWinnerTakesAll.isAllowedAt(2, owner.address)).to.be.true;
+      expect(await mockWinnerTakesAll.isAllowedAt(2, alice.address)).to.be.true;
+    });
+
+    it("verifies they are still excluded from other rounds", async () => {
+      const array = await ethers.getSigners();
+      
+      for (let i = 0; i < 2; i++) {
+        const user = array[i];
+        expect(await mockWinnerTakesAll.isAllowedAt(0, user.address)).to.be
+          .false;
+        expect(await mockWinnerTakesAll.isAllowedAt(1, user.address)).to.be
+          .false;
+      }
     });
   });
 });
