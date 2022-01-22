@@ -161,7 +161,26 @@ describe("WinnerTakesAll", async () => {
     // verify all data from rounds have been deleted including rewards allocated to each round and addresses allowed to participate to each round
   });
 
-  describe.skip("withdrawETH(...)", async () => {
-    // verify the owner can withdraw ALL ETH inside WinerTakesAll contrac
+  describe("withdrawETH(...)", async () => {
+    it("verifies the owner can retrieve all ETH sent to the contract", async () => {
+      // owner deposit 11 ETH in the contract as rewards for round 1
+      await mockWinnerTakesAll.createNewRounds(1);
+      await mockWinnerTakesAll.setRewardsAtRound(0, {
+        value: parseUnits("11", "ether"),
+      });
+      // 11 ETH less for owner
+      const ownerBalanceAfterSettingRewards = parseFloat(
+        formatEther(await getBNBBalance(owner.address))
+      );
+
+      await mockWinnerTakesAll.withrawETH();
+
+      expect(
+        parseFloat(formatEther(await getBNBBalance(owner.address)))
+      ).to.be.within(
+        ownerBalanceAfterSettingRewards + 5,
+        ownerBalanceAfterSettingRewards + 11
+      );
+    });
   });
 });
