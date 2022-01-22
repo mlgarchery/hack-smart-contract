@@ -90,7 +90,7 @@ describe("WinnerTakesAll", async () => {
 
     it("verifies they are still excluded from other rounds", async () => {
       const array = await ethers.getSigners();
-      
+
       for (let i = 0; i < 2; i++) {
         const user = array[i];
         expect(await mockWinnerTakesAll.isAllowedAt(0, user.address)).to.be
@@ -99,5 +99,44 @@ describe("WinnerTakesAll", async () => {
           .false;
       }
     });
+  });
+
+  describe("withdrawRewards(...)", async () => {
+    it("fails on Bob retrieving rewards of round 3", async () => {
+      const oldBobETHBalance = parseFloat(
+        formatEther(await getBNBBalance(bob.address))
+      );
+
+      await expect(mockWinnerTakesAll.connect(bob).withdrawRewards(2)).to.be
+        .reverted;
+      // Bob balance remains more or less the same, due to gas fees taken on failed rewards withdrawl
+      expect(
+        parseFloat(formatEther(await getBNBBalance(bob.address)))
+      ).to.be.within(oldBobETHBalance - 1, oldBobETHBalance);
+    });
+
+    it("succeed on Alice retrieving her 25 ETH rewards of round 3", async () => {
+      // , rounds[index].rewards should be 0 & Alice should have +25 ETH
+      const oldAliceETHBalance = parseFloat(
+        formatEther(await getBNBBalance(alice.address))
+      );
+
+      await mockWinnerTakesAll.connect(alice).withdrawRewards(2);
+      // contract's amount should be 0
+      expect(await getBNBBalance(mockWinnerTakesAll.address)).to.be.eq(0);
+      expect(await mockWinnerTakesAll.rounds(2)).to.be.eq(0);
+      // Due to gas fee, Alice can have less than 25ETH from rewards but for sure between +20 ETH and +25 ETH (max)
+      expect(
+        parseFloat(formatEther(await getBNBBalance(alice.address)))
+      ).to.be.within(oldAliceETHBalance + 20, oldAliceETHBalance + 25);
+    });
+  });
+
+  describe.skip("clearRounds(...)", async () => {
+    // verify all data from rounds have been deleted including rewards allocated to each round and addresses allowed to participate to each round
+  });
+
+  describe.skip("withdrawETH(...)", async () => {
+    // verify the owner can withdraw ALL ETH inside WinerTakesAll contrac
   });
 });
