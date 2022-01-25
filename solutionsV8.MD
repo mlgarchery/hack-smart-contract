@@ -16,11 +16,13 @@
 - to avoid reentrancy attacks: update balances var before transfer & use reentrancy guard (OpenZeppelin)
 
 ## Exercise 1
-
+- `safe.amount = 0` before transfer
+- `call{value: amount}("")` + payable
+- `take(...)`: add reentrancy guard
 <br><br>
 
 ## Exercise 2
-
+- `address(0)` can't buy
 <br><br>
 
 ## Exercise 3
