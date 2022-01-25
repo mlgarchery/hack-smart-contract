@@ -98,7 +98,10 @@
 <br><br>
 
 ## Exercise 14
-- 
+- `deposit(...)`: not mentionned we can only deposit ETH as long as the contract holds <= 10 ETH
+- `withdrawAll(...)`:
+  - `call{value: amount}("")` + payable
+  - update `require` if we can deposit when there are more than 10 ETH in the contract
 
 <br><br>
 
