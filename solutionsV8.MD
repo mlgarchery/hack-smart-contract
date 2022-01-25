@@ -61,7 +61,15 @@
 <br><br>
 
 ## Exercise 9
-
+- The are too many errors of conception that doesn't make sense:
+  - on `deposit(...)`:
+    - if `scaleFactor` is not 0:
+      - if `msg.value` > `address(this).balance` there will be an error thrown on `toAdd` instanciation as solidity doesn't support negative numbers
+    - if `scaleFactor` is 0:
+      - should it only set the scale to 100? Or should it also registered transfered ETH to the contract from `msg.sender`? Or should it set `scaleFactor` to 2 (as 100% = x2)?
+  - on `withdraw(...)`:
+      - `scaleFactor` is not representative of a specific slot as done in `Coffers`
+- use `call{value: amount}("")` + payable
 <br><br>
 
 ## Exercise 10
