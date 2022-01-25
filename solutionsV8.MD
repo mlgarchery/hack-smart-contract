@@ -24,7 +24,10 @@
 <br><br>
 
 ## Exercise 3
-
+- `lastChoiceHead` is public => can be easily seen by the other party
+- `chosen = false;` before transfer
+- `call{value: amount}("")` + payable
+- missing `require` strings
 <br><br>
 
 ## Exercise 4
