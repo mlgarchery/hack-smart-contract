@@ -42,7 +42,10 @@
 <br><br>
 
 ## Exercise 6
-
+- missing `require` on:
+  - `msg.sender` has enough balance
+  - sender & recipient not `address(0)`
+- `unchecked` for sender balance update
 <br><br>
 
 ## Exercise 7
