@@ -31,7 +31,14 @@
 <br><br>
 
 ## Exercise 5
-
+- `contrusctor`: missing string in `require`
+- `guess(...)`:
+  - there is no verification on `partyB` is not `partyA`
+  - string in `require`
+- `resolve(...)`:
+  - `call{value: amount}("")` + payable
+  - string in `require`
+- `timeout(...)`: never called in `resolve(...)` so even after 1 day `partyA` can still call `resolve(...)` to get earned funds
 <br><br>
 
 ## Exercise 6
