@@ -43,7 +43,14 @@
 <br><br>
 
 ## Exercise 8
-
+- `deposit(...)`: missing string for `require` error
+- `withdraw(...)`:
+  - `call{value: amount}("")` + payable
+  - missing string for `require` error
+  - avoid reentrancy attack: `coffer.slots[slot] = 0` update before transfer + reentrancy guard
+- `closeAccount(...)`
+  - `call{value: amount}("")` + payable
+  - might be better with a reentrancy guard
 <br><br>
 
 ## Exercise 9
@@ -56,7 +63,7 @@
 - `declareWinner(...)`:
   - missing `require(...)` on sides A & B funds deposit (seems like wanted as if the winner side hasn't deposited money the reward will be burnt)
 - `payReward(...)`:
-  - avoid reentrancy attack: `reward` update before transfer + reentrancy guard
+  - avoid reentrancy attack: `reward = 0` before transfer + reentrancy guard
   - `call{value: amount}("")` + payable
 <br><br>
 
