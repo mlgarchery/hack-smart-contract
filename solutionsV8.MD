@@ -12,7 +12,8 @@
 - add missing strings for ALL `require(...)`
 - use 3-4 chars for `require(...)` or `revert(...)` error message to optimise contract size
 - solidity doesn't support decimals: when diving numbers, expressed in Wei, multiple the multiplier by 10**18: `(msg.value \* 10**18) / 1 ether;`
-
+- avoid using `transfer` and `send`. Use `call{value: amount}("")` and make functions payable
+- to avoid reentrancy attacks: update balances var before transfer & use reentrancy guard (OpenZeppelin)
 ## Exercise 1
 
 <br><br>
@@ -66,7 +67,18 @@
 <br><br>
 
 ## Exercise 14
+- 
 
 <br><br>
 
 ## Exercise 15
+- `createNewRounds`:
+  - anyone can create new rounds: made on purpose or missing `require(msg.sender == owner, "Owner only")` => *owner considered as TRUSTED can set rounds with rewards* => owner only can create new rounds + set rewards? or anyone can create rounds but rewards are set up only by owner?
+  - if 1rst option: use `Ownable` and `onlyOwner` modifier
+  - limit loop size per transaction to avoid spending enormous amount of gas on "infinite" loops
+- `setRewardsAtRoundFor`:
+  - name isn't self explanatory, replace with: `allowAddressesToParticipateAt`
+  - is it ok that owner can include themselves in round participation?
+  - withdrawRewards: `call{value: amount}("")` + payable
+  - withdrawETH: `call{value: amount}("")` + payable
+- use Context (even Ownable here) to replace `msg.sender` with `_msgSender()`
