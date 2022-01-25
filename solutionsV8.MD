@@ -63,7 +63,18 @@
 <br><br>
 
 ## Exercise 13
-
+- `guess(...)`: not detailed if player must strictly send 1 ETH or minimum 1 ETH. If minimum update `require`.
+- `reveal(...)`: require of reveal period is strictly lower `<` but can be made `<=` as commitment period in `guess(...)`
+- `findWinner()`: 
+  - missing `require()` erro string
+  - anyone can call the function: made on purpose?
+  - after `if (i == guesses.length)` an else can be added so we only update `cursorWinner` when we have not passed through the whole array
+  - comment `// If we have passed through the entire array, update currentStage.` is 1 line too high: confusing
+- `distribute(...)`:
+  - avoid reentrancy attacks: reentrancy guard + move `if (i == winners.length - 1) currentStage = Stage.Distributed;` before transfer
+  - `call{value: amount}("")` + payable
+  - after the `for` loop, `if(i < winners.length)` should be added to update `cursorDistribute` only when we haven't finished going through the list
+- players can monitor how many addresses there are left (`indexToPlayer` & `players` public) and use it to reveal there other account at the last moment
 <br><br>
 
 ## Exercise 14
@@ -72,11 +83,11 @@
 <br><br>
 
 ## Exercise 15
-- `createNewRounds`:
+- `createNewRounds(...)`:
   - anyone can create new rounds: made on purpose or missing `require(msg.sender == owner, "Owner only")` => *owner considered as TRUSTED can set rounds with rewards* => owner only can create new rounds + set rewards? or anyone can create rounds but rewards are set up only by owner?
   - if 1rst option: use `Ownable` and `onlyOwner` modifier
   - limit loop size per transaction to avoid spending enormous amount of gas on "infinite" loops
-- `setRewardsAtRoundFor`:
+- `setRewardsAtRoundFor(...)`:
   - name isn't self explanatory, replace with: `allowAddressesToParticipateAt`
   - is it ok that owner can include themselves in round participation?
   - withdrawRewards: `call{value: amount}("")` + payable
