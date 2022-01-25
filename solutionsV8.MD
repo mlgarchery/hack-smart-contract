@@ -75,7 +75,8 @@
 <br><br>
 
 ## Exercise 11
-
+- `calldata` can only be used with external functions => either change visibility or use `memory` instead
+- `abi.encode` pads the encoding in a standard way which is a requirement when using external calls (like call method encoding) + it uses more space than `abi.encodePacked`. In our case it might be better to use `abi.encode` as it is a standard packed mode and the ID can be created seamlessly on other systems.
 <br><br>
 
 ## Exercise 12
