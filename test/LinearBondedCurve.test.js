@@ -20,19 +20,37 @@ before(async () => {
 describe("LinearBondedCurve", async () => {
   it("verifies currentStage is 0", async () => {
     await mockLinearBondedCurve.buy({
-      value: parseUnits("10", "ether"),
-    });
-    await mockLinearBondedCurve.buy({
-      value: parseUnits("20", "ether"),
-    });
-    await mockLinearBondedCurve.buy({
-      value: parseUnits("30", "ether"),
+      value: parseUnits("0.5", "ether"),
     });
 
-    const balances = await mockLinearBondedCurve.balances(owner.address);
-    const totalSupply = await mockLinearBondedCurve.totalSupply();
+    let balances = await mockLinearBondedCurve.balances(owner.address);
+    totalSupply = await mockLinearBondedCurve.totalSupply();
 
     console.log("balances: ", formatEther(balances));
     console.log("totalSupply: ", formatEther(totalSupply));
+
+    await mockLinearBondedCurve.buy({
+      value: parseUnits("3", "ether"),
+    });
+
+    balances = await mockLinearBondedCurve.balances(owner.address);
+    totalSupply = await mockLinearBondedCurve.totalSupply();
+
+    console.log("balances: ", formatEther(balances));
+    console.log("totalSupply: ", formatEther(totalSupply));
+
+    console.log(
+      "contract has: %s ETH",
+      formatEther(await getBNBBalance(await mockLinearBondedCurve.address))
+    );
+  });
+
+  it("sells 1.25", async () => {
+    await mockLinearBondedCurve.sell(parseUnits("1.25", "ether"));
+
+    console.log(
+      "contract has: %s ETH left",
+      formatEther(await getBNBBalance(await mockLinearBondedCurve.address))
+    );
   });
 });

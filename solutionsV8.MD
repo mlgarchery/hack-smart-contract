@@ -67,7 +67,19 @@ function redeem() public payable {
   <br><br>
 
 ## Exercise 7
-
+- There is an issue in `sell(...)` on curve calculation because when there are to `buy(...)` with value to near one from the other then `sell(...)` function failed due to insufficient balance.
+e.g.: buying 0.5 ETH then 3 ETH, then selling 1.25 fails
+- all functions: sender & receiver can't be `address(0)`
+- `buy()`:
+  - no reentrancy guard
+- `sell(...)`:
+  - too many eth to be sent: contract doesn't have enough funds
+  - no reentrancy guard
+  - no verification if sender has enough balance
+  - `call{value: amount}("")` + payable
+- `sendToken(...)`:
+  - no `unchecked` on sender balance update
+  - no verification if sender has enough balance
 <br><br>
 
 ## Exercise 8
