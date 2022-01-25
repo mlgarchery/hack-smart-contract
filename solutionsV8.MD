@@ -79,7 +79,15 @@
 <br><br>
 
 ## Exercise 12
-
+- `buyToken(...)`:
+  - `_newBalance` issue as solidity doesn't support decimals, replace with `balances[msg.sender] += (msg.value * 10**18) / 1 ether`
+- `transfer(...)`:
+  - missing `require` to check:
+    - sender *(msg.sender)* has enough balance
+    - sender & recipient aren't `address(0)`
+  - balances update:
+    - missing `uchecked on balances`: `unchecked{ blances[msg.sender] = balancesFrom - value }`
+    - `balances[to] += _value` 
 <br><br>
 
 ## Exercise 13
