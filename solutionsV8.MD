@@ -51,7 +51,13 @@
 <br><br>
 
 ## Exercise 10
-
+- better to use Ownable to manage ownership and be sure to initialise owner in the constructor
+- `deposit(...)`: no comments saying deposit must be greater than `baseDeposit` so we can add `>=` for lower or equal
+- `declareWinner(...)`:
+  - missing `require(...)` on sides A & B funds deposit (seems like wanted as if the winner side hasn't deposited money the reward will be burnt)
+- `payReward(...)`:
+  - avoid reentrancy attack: `reward` update before transfer + reentrancy guard
+  - `call{value: amount}("")` + payable
 <br><br>
 
 ## Exercise 11
