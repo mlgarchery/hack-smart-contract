@@ -323,7 +323,7 @@ contract Resolver {
     uint256[2] public partyDeposits;
 
     /** @dev Constructor.
-     *  @param _baseDeposit The deposit a party has to pay. Note that it is greater than the reward.
+     *  @param _baseDeposit The deposit a party has to pay. Note that it should be between reward and one half of reward to be interesting.
      */
     constructor(uint256 _baseDeposit) payable {
         reward = msg.value;
@@ -336,7 +336,7 @@ contract Resolver {
     function deposit(Side _side) public payable {
         require(!declared, "The winner is already declared");
         require(sides[uint256(_side)] == address(0), "Side already paid");
-        require(msg.value > baseDeposit, "Should cover the base deposit");
+        require(msg.value >= baseDeposit, "Should cover the base deposit");
         sides[uint256(_side)] = payable(msg.sender);
         partyDeposits[uint256(_side)] = msg.value;
     }
@@ -352,7 +352,7 @@ contract Resolver {
         winner = _winner;
     }
 
-    /** @dev Pays the reward to the winner. Reimburse the surplus deposit for both parties if there was one.
+    /** @dev Pays the reward to the winner. Reimburse the surplus deposit for both parties if there was one. Assume no reentrancy.
      */
     function payReward() public {
         require(declared, "The winner is not declared");
@@ -392,9 +392,10 @@ contract Registry {
     }
 
     // Nonce is used so the contract can add multiple profiles with the same first name and last name.
-    mapping(string => mapping(string => mapping(uint256 => bool)))
-        public isRegistered; // name -> surname -> nonce -> registered/not registered.
-    mapping(bytes32 => User) public users; // User isn't identified by address but by his ID, since the same person can have multiple addresses.
+    // name -> surname -> nonce -> registered/not registered.
+    mapping(string => mapping(string => mapping(uint256 => bool))) public isRegistered;
+    // User isn't identified by address but by his ID, since the same person can have multiple addresses.
+    mapping(bytes32 => User) public users;
 
     /** @dev Adds yourself to the registry.
      *  @param _name The first name of the user.
@@ -484,6 +485,7 @@ contract SnapShotToken {
 // The winners are those who are the nearest from the average.
 // Note that some players may not reveal and use multiple accounts, this is part of the game and can be used tactically.
 // Also note that waiting the last minute to reveal is also part of the game and can be used tactically (but it would probably cost a lot of gas).
+// Assume no reentrancy.
 contract GuessTheAverage {
     uint256 public immutable start; // Beginning of the game.
     uint256 public immutable commitDuration; // Duration of the Commit Period.
@@ -506,7 +508,7 @@ contract GuessTheAverage {
     struct Player {
         uint256 playerIndex; // Index of the player in the guesses list.
         bool hasGuessed; // Whether the player has guessed or not.
-        bool hasReveal; // Whether the player has revealed or not.
+        bool hasRevealed; // Whether the player has revealed or not.
         bytes32 commitment; // commitment of the player.
     }
 
@@ -551,17 +553,15 @@ contract GuessTheAverage {
             "Reveal period must have begun and not ended"
         );
         Player storage player = players[msg.sender];
-        require(!player.hasReveal, "Player has already revealed");
+        require(!player.hasRevealed, "Player has already revealed");
         require(player.hasGuessed, "Player must have guessed");
         // Check the hash to prove the player's honesty
-        require(
-            keccak256(abi.encode(msg.sender, _number, _blindingFactor)) ==
-                player.commitment,
+        require(           keccak256(abi.encode(msg.sender, _number, _blindingFactor)) == player.commitment,
             "Invalid hash"
         );
 
         // Update player and guesses.
-        player.hasReveal = true;
+        player.hasRevealed = true;
         average += _number;
         indexToPlayer[guesses.length] = msg.sender;
         guesses.push(_number);
